@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="my"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXO Member</title>
+<style>
+body{margin:0;background:#0b1020;color:#fff;font-family:Arial,sans-serif}
+main{max-width:520px;margin:auto;padding:18px}.card{background:#151c32;border:1px solid #2b3654;border-radius:18px;padding:20px;margin:12px 0}
+input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:10px;box-sizing:border-box}
+input,select{background:#0e1528;color:#fff;border:1px solid #34415f}button{border:0;background:#5b7cff;color:#fff;font-weight:bold}
+.notice{padding:12px;border-radius:10px;background:#202b47;line-height:1.7}.step{display:none}.active{display:block}
+</style></head><body><main>
+<div class="card"><h1>🎟️ NEXO Member</h1><p>Token 2005 → 2055</p></div>
+
+<div id="a" class="card step active"><h2>Account</h2>
+<input id="name" placeholder="Username / Account Name">
+<select id="type"><option>Telegram</option><option>TikTok</option></select>
+<button onclick="register()">ဆက်လုပ်မည်</button></div>
+
+<div id="b" class="card step"><h2>Token ဝယ်ရန်</h2>
+<select id="qty" onchange="total()"></select>
+<div id="price" class="notice"></div>
+<button onclick="show('c')">ငွေလွှဲနည်း</button></div>
+
+<div id="c" class="card step"><h2>Payment</h2>
+<div class="notice">KBZPay / WavePay<br><b>09652439461</b></div>
+<input id="sender" placeholder="ငွေလွှဲသူအမည်">
+<input id="trx" placeholder="Transaction ID">
+<button onclick="pay()">Payment Request ပို့မည်</button>
+<p id="status"></p></div>
+
+<div id="d" class="card step"><h2>Request ပို့ပြီးပါပြီ</h2>
+<p>Admin က payment ကို စစ်ဆေးပြီး Approve လုပ်ရပါမယ်။ Approve ပြီးရင် Token နံပါတ်တွေကို System မှာ ထုတ်ပေးနိုင်ပါတယ်။</p>
+<a href="https://t.me/nexo11145" target="_blank"><button>Telegram @nexo11145</button></a></div>
+</main>
+<script>
+let uid=null;
+for(let i=1;i<=10;i++){qty.innerHTML+=`<option value="${i}">${i} Token — ${(i*5000).toLocaleString()} MMK</option>`}
+function show(x){document.querySelectorAll(".step").forEach(e=>e.classList.remove("active"));document.getElementById(x).classList.add("active")}
+function total(){price.innerHTML=`ပေးရမည့်ငွေ <b>${(Number(qty.value)*5000).toLocaleString()} MMK</b>`} total();
+async function register(){
+ const r=await fetch("/api/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:name.value,loginType:type.value})});
+ const d=await r.json(); if(!r.ok)return alert(d.error); uid=d.userId; show("b");
+}
+async function pay(){
+ const r=await fetch("/api/payment-request",{method:"POST",headers:{"Content-Type":"application/json"},
+ body:JSON.stringify({userId:uid,qty:Number(qty.value),sender:sender.value,trx:trx.value})});
+ const d=await r.json(); if(!r.ok)return alert(d.error);
+ show("d");
+}
+</script></body></html>
